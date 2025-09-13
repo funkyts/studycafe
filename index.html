@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>무인 스터디카페 창업 성공 확률 진단</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .quiz-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .intro-screen h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .stats {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 25px 0;
+        }
+
+        .counter {
+            font-size: 36px;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .counter-label {
+            font-size: 14px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .intro-text {
+            font-size: 16px;
+            color: #4a5568;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .start-btn, .next-btn, .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .start-btn:hover, .next-btn:hover, .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .question-screen {
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .question-number {
+            font-size: 14px;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .question-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .answer-option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 16px;
+            color: #4a5568;
+        }
+
+        .answer-option:hover {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .answer-option.selected {
+            border-color: #667eea;
+            background: #e6fffa;
+            color: #2d3748;
+        }
+
+        .next-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            display: none;
+        }
+
+        .score-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: #667eea;
+            margin: 20px 0;
+        }
+
+        .score-label {
+            font-size: 18px;
+            color: #4a5568;
+            margin-bottom: 25px;
+        }
+
+        .result-card {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .result-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .result-description {
+            font-size: 16px;
+            color: #4a5568;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .improvement-section {
+            background: #fff5e6;
+            border: 2px solid #fbb560;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .improvement-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #d69e2e;
+            margin-bottom: 15px;
+        }
+
+        .improvement-text {
+            font-size: 16px;
+            color: #744210;
+            line-height: 1.5;
+        }
+
+        .cta-section {
+            background: #1a202c;
+            color: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .cta-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .cta-description {
+            font-size: 16px;
+            color: #a0aec0;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .typeform-embed {
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .quiz-card {
+                padding: 30px 20px;
+                margin: 10px 0;
+            }
+
+            .intro-screen h1 {
+                font-size: 24px;
+            }
+
+            .counter {
+                font-size: 32px;
+            }
+
+            .question-title {
+                font-size: 20px;
+            }
+
+            .answer-option {
+                padding: 16px 18px;
+                font-size: 15px;
+            }
+
+            .score-display {
+                font-size: 42px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 시작 화면 -->
+        <div id="intro" class="quiz-card intro-screen fade-in">
+            <h1>무인 스터디카페 창업<br>성공 확률 진단</h1>
+            
+            <div class="stats">
+                <div class="counter" id="counter">0</div>
+                <div class="counter-label">명이 이미 받아갔습니다</div>
+            </div>
+
+            <div class="intro-text">
+                무인창업에 관심이 있다면 <span class="highlight">인생에 한번쯤은 꼭 해봐야 할</span> 정확한 진단입니다.
+                <br><br>
+                실제 성공 사례를 분석해 만든 10가지 질문으로 당신의 창업 준비도를 측정하고, 
+                <span class="highlight">성공 확률을 높이는 구체적인 방법</span>을 알려드립니다.
+                <br><br>
+                ⏱️ <strong>1분이면 충분합니다</strong>
+            </div>
+
+            <button class="start-btn" onclick="startQuiz()">진단 시작하기</button>
+        </div>
+
+        <!-- 질문 화면 -->
+        <div id="quiz" class="quiz-card question-screen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
+            </div>
+            
+            <div class="question-number" id="questionNumber">질문 1/10</div>
+            <h2 class="question-title" id="questionTitle"></h2>
+            
+            <div id="answers"></div>
+            
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>다음</button>
+        </div>
+
+        <!-- 결과 화면 -->
+        <div id="result" class="quiz-card result-screen">
+            <h2>당신의 무인 스터디카페<br>창업 성공 확률</h2>
+            
+            <div class="score-display" id="scoreDisplay">0%</div>
+            <div class="score-label" id="scoreLabel">현재 준비 상태</div>
+
+            <div class="result-card" id="resultCard"></div>
+
+            <div class="improvement-section">
+                <div class="improvement-title">📚 창업 성공률 향상 가능성</div>
+                <div class="improvement-text" id="improvementText"></div>
+            </div>
+
+            <div class="cta-section">
+                <div class="cta-title">🎯 스터디카페 창업 필수 질문 41개</div>
+                <div class="cta-description">
+                    실제 창업할 때 반드시 마주하게 되는 핵심 질문들을 미리 준비하세요. 
+                    이 질문들에 대한 답을 준비한다면 <strong>성공 확률을 20-30% 더 높일 수 있습니다.</strong>
+                    <br><br>
+                    지금 바로 받아보세요 👇
+                </div>
+                
+                <div class="typeform-embed">
+                    <div data-tf-live="01K3D1750B0M1THZQYNNXK7DTC"></div>
+                </div>
+            </div>
+
+            <button class="restart-btn" onclick="restartQuiz()">다시 진단하기</button>
+        </div>
+    </div>
+
+    <script src="//embed.typeform.com/next/embed.js"></script>
+    <script>
+        const questions = [
+            {
+                title: "현재 창업 자금을 어떻게 준비하고 계신가요?",
+                answers: [
+                    "5천만원 이상 현금으로 준비했고, 추가 여유 자금 있음",
+                    "3-5천만원 준비했고, 필요시 대출 가능한 상태",
+                    "2-3천만원 정도만 있고, 대출을 많이 받아야 함",
+                    "1천만원 정도만 있어서 자금 조달이 더 필요함"
+                ]
+            },
+            {
+                title: "스터디카페 입지를 선택할 때 가장 중요하게 보는 것은?",
+                answers: [
+                    "대학가와 학원가, 유동인구, 경쟁업체 수를 종합 분석",
+                    "학생들이 많이 다니는 곳이면서 접근성이 좋은 곳",
+                    "월세가 적당하면서 사람들 눈에 잘 띄는 곳",
+                    "그냥 느낌이 좋고 월세가 저렴한 곳"
+                ]
+            },
+            {
+                title: "키오스크나 출입 시스템에 문제가 생겼을 때 어떻게 하실 건가요?",
+                answers: [
+                    "매뉴얼 숙지해두고 1차 해결 시도 후 안되면 즉시 업체 연락",
+                    "바로 설치업체나 본사 A/S팀에 연락해서 해결",
+                    "유튜브 보거나 지인에게 물어본 후 업체 연락",
+                    "당황스럽고 어떻게 해야 할지 잘 모르겠음"
+                ]
+            },
+            {
+                title: "매일매일 수익과 이용 현황을 어떻게 관리하실 계획인가요?",
+                answers: [
+                    "매일 확인하고 요일별, 시간대별 패턴 분석해서 운영 개선",
+                    "이틀에 한 번은 꼭 확인하고 주간 단위로 분석",
+                    "일주일에 2-3번 정도 확인할 것 같음",
+                    "월말 정산할 때나 가끔 확인할 것 같음"
+                ]
+            },
+            {
+                title: "신규 고객을 늘리기 위한 구체적인 계획이 있나요?",
+                answers: [
+                    "SNS 운영, 대학교 홍보, 할인 이벤트, 입소문 마케팅 계획",
+                    "인스타그램이나 전단지 정도는 해볼 생각",
+                    "현수막이나 간판으로 홍보하려고 함",
+                    "특별한 마케팅 계획은 없음"
+                ]
+            },
+            {
+                title: "하루에 스터디카페 관리에 몇 시간이나 쓸 수 있나요?",
+                answers: [
+                    "매일 2-3시간은 투자할 수 있음",
+                    "평일 1시간, 주말에 3-4시간 집중 관리",
+                    "이틀에 한 번씩 1-2시간 정도",
+                    "일주일에 한두 번만 들러서 간단히 확인"
+                ]
+            },
+            {
+                title: "무인 스터디카페 선택 이유와 시장 전망을 어떻게 보시나요?",
+                answers: [
+                    "경쟁 심화와 수익성 하락 위험을 알고 있지만 차별화 전략 있음",
+                    "안정적인 수익 모델이라고 생각해서 선택",
+                    "관리가 쉽고 무인이라 편할 것 같아서",
+                    "유행하는 창업 아이템이라 선택"
+                ]
+            },
+            {
+                title: "기본 좌석 대여 외에 추가 수익을 만들 계획이 있나요?",
+                answers: [
+                    "프린터 서비스나 스터디 용품 판매 등 구체적 계획 있음",
+                    "몇 가지 추가 서비스를 고려 중",
+                    "관심은 있지만 구체적인 방법은 모름",
+                    "좌석 대여만으로도 충분할 것 같음"
+                ]
+            },
+            {
+                title: "스마트폰 앱으로 매장을 원격 관리하는 것에 대해 어떠세요?",
+                answers: [
+                    "이미 비슷한 앱들 써봤고, 새로운 시스템도 금방 익힐 수 있음",
+                    "설명서나 튜토리얼 보면서 배우면 할 수 있을 것 같음",
+                    "기본 기능만 쓸 수 있을 것 같음",
+                    "복잡한 앱이나 시스템은 어려워할 것 같음"
+                ]
+            },
+            {
+                title: "무인 스터디카페로 현실적으로 기대하는 월수익은?",
+                answers: [
+                    "150-250만원으로 현실적 목표 설정",
+                    "300-400만원 정도 기대하고 있음",
+                    "500만원 이상 높은 기대치 있음",
+                    "구체적으로 계산해본 적 없음"
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+        let totalScore = 0;
+
+        function startQuiz() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            document.getElementById('quiz').classList.add('fade-in');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `질문 ${currentQuestion + 1}/10`;
+            document.getElementById('questionTitle').textContent = question.title;
+            
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const div = document.createElement('div');
+                div.className = 'answer-option';
+                div.textContent = `${String.fromCharCode(65 + index)}. ${answer}`;
+                div.onclick = () => selectAnswer(index, div);
+                answersDiv.appendChild(div);
+            });
+
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+
+        function selectAnswer(answerIndex, element) {
+            document.querySelectorAll('.answer-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            answers[currentQuestion] = answerIndex;
+            
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                document.getElementById('nextBtn').disabled = true;
+                showQuestion();
+            } else {
+                calculateScore();
+                showResult();
+            }
+        }
+
+        function calculateScore() {
+            totalScore = 0;
+            answers.forEach(answer => {
+                totalScore += (4 - answer); // 첫 번째 선택지가 4점, 마지막이 1점
+            });
+        }
+
+        function showResult() {
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').classList.add('fade-in');
+            
+            const percentage = Math.round((totalScore / 40) * 100);
+            
+            // 점수 애니메이션
+            let currentScore = 0;
+            const scoreElement = document.getElementById('scoreDisplay');
+            const interval = setInterval(() => {
+                if (currentScore < percentage) {
+                    currentScore += 2;
+                    scoreElement.textContent = currentScore + '%';
+                } else {
+                    scoreElement.textContent = percentage + '%';
+                    clearInterval(interval);
+                }
+            }, 50);
+
+            // 결과에 따른 메시지
+            let resultData;
+            if (percentage >= 85) {
+                resultData = {
+                    title: "🟢 창업 적극 추천!",
+                    description: "준비 완료된 예비 창업자입니다. 충분한 자금과 현실적 시장 이해, 체계적 운영 계획과 문제 해결 능력을 갖추셨습니다.",
+                    advice: "바로 상권 분석 후 창업을 진행하세요.",
+                    improvement: "필수 질문 41개로 마지막 점검을 하면 성공 확률을 90% 이상까지 높일 수 있습니다."
+                };
+            } else if (percentage >= 70) {
+                resultData = {
+                    title: "🟡 보완 후 창업 가능",
+                    description: "기본기는 있으나 일부 보완이 필요합니다. 자금이나 운영 경험 중 일부가 부족하지만 기본적인 사업 마인드는 갖춰져 있습니다.",
+                    advice: "주변 조언을 통해서 학습하며 창업을 추천합니다.",
+                    improvement: "필수 질문 41개를 통해 부족한 부분을 보완하면 성공 확률을 80% 이상까지 높일 수 있습니다."
+                };
+            } else if (percentage >= 50) {
+                resultData = {
+                    title: "🟠 충분한 준비 필요",
+                    description: "현재 상태로는 위험성이 높습니다. 자금, 경험, 시장 이해도가 부족하고 무인 운영의 현실적 어려움을 간과하고 있을 수 있습니다.",
+                    advice: "충분한 학습과 준비 후 재도전을 권합니다.혼자서는 어려울 수 있습니다",
+                    improvement: "필수 질문 41개로 체계적으로 준비하면 성공 확률을 70% 이상까지 높일 수 있습니다."
+                };
+            } else {
+                resultData = {
+                    title: "🔴 창업 시기 재고 필요",
+                    description: "무인창업은 아직 이른 단계입니다. 기본적인 준비와 이해도가 부족하여 높은 실패 위험성이 있습니다.",
+                    advice: "다른 경험을 쌓거나 안정적 일자리를 우선 고려하세요.",
+                    improvement: "필수 질문 41개로 기초부터 차근차근 준비하면 성공 확률을 60% 이상까지 높일 수 있습니다."
+                };
+            }
+
+            document.getElementById('resultCard').innerHTML = `
+                <div class="result-title">${resultData.title}</div>
+                <div class="result-description">${resultData.description}</div>
+                <div class="result-description"><strong>조언: </strong>${resultData.advice}</div>
+            `;
+
+            document.getElementById('improvementText').textContent = resultData.improvement;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = [];
+            totalScore = 0;
+            
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('intro').style.display = 'block';
+            document.getElementById('intro').classList.add('fade-in');
+        }
+
+        // 카운터 애니메이션
+        function animateCounter() {
+            const counter = document.getElementById('counter');
+            const target = 312;
+            let current = 0;
+            const increment = target / 50;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    counter.textContent = target + '+';
+                    clearInterval(timer);
+                } else {
+                    counter.textContent = Math.floor(current);
+                }
+            }, 40);
+        }
+
+        // 페이지 로드 시 카운터 애니메이션 실행
+        window.addEventListener('load', animateCounter);
+    </script>
+</body>
+</html>
